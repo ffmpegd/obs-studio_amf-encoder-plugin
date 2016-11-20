@@ -313,9 +313,8 @@ bool Plugin::AMD::VCECapabilities::Refresh() {
 			amfComponent->Terminate();
 
 			// Register
-			deviceToCapabilities.insert_or_assign(
-				std::pair<Plugin::API::Device, Plugin::AMD::VCEEncoderType>(device, capsType[capsIndex]),
-				*caps[capsIndex]);
+			std::pair<Plugin::API::Device, Plugin::AMD::VCEEncoderType> devkv(device, capsType[capsIndex]);
+			deviceToCapabilities.insert(std::make_pair(devkv, *caps[capsIndex]));
 		}
 
 		amfContext->Terminate();
