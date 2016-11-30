@@ -29,6 +29,7 @@ SOFTWARE.
 //////////////////////////////////////////////////////////////////////////
 #include <string>
 #include <sstream>
+#include <tuple>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -334,15 +335,15 @@ bool Plugin::AMD::VCECapabilities::Refresh() {
 std::vector<std::pair<VCEEncoderType, VCEDeviceCapabilities>> Plugin::AMD::VCECapabilities::GetAllAdapterCapabilities(std::shared_ptr<Plugin::API::Base> api, Plugin::API::Adapter adapter) {
 	std::vector<std::pair<VCEEncoderType, VCEDeviceCapabilities>> caps;
 	for (auto kv : capabilityMap) {
-		auto apiName = std::get<std::string>(kv.first);
-		auto adapter = std::get<Plugin::API::Adapter>(kv.first);
+		auto apiName = std::get<0>(kv.first);
+		auto adapter = std::get<1>(kv.first);
 
 		if (apiName != api->GetName())
 			continue;
 		if (adapter != adapter)
 			continue;
 
-		VCEEncoderType type = std::get<VCEEncoderType>(kv.first);
+		VCEEncoderType type = std::get<2>(kv.first);
 		caps.push_back(std::make_pair(type, kv.second));
 	}
 	return caps;
