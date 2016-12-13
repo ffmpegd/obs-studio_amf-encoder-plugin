@@ -27,8 +27,8 @@ SOFTWARE.
 //////////////////////////////////////////////////////////////////////////
 #include <chrono>
 
-#include "amd-amf-vce.h"
-#include "amd-amf-vce-capabilities.h"
+#include "amf-h264.h"
+#include "amf-capabilities.h"
 #include "misc-util.cpp"
 #include "api-base.h"
 
@@ -431,17 +431,19 @@ bool Plugin::AMD::VCEEncoder::SendInput(struct encoder_frame* frame) {
 	auto timedelta = std::chrono::high_resolution_clock::now() - m_LastQueueWarnMessageTime;
 	if (timedelta >= std::chrono::seconds(1)) { // Only show these messages once per second.
 		if (queueSuccessful) {
-			int32_t queueSizeDelta = ((int32_t)m_InputQueueLastSize - (int32_t)queueSize);
+			int32_t queueSizeDelta = ((int32_t)queueSize - (int32_t)m_InputQueueLastSize);
 
-			if (queueSizeDelta >= 5) {
+			if (queueSizeDelta <= -5) {
 				AMF_LOG_INFO("GPU Encoder is catching up, queue is shrinking... (%ld,%+ld,%ld)",
 					m_InputQueueLastSize,
 					queueSizeDelta,
 					queueSize);
 				m_InputQueueLastSize = queueSize;
-			} else if (queueSizeDelta <= -5) {
+			} else if (queueSizeDelta >= 5) {
 				AMF_LOG_WARNING("GPU Encoder overloaded, queue is growing... (%ld,%+ld,%ld)",
-					m_InputQueueLastSize, queueSizeDelta, queueSize);
+					m_InputQueueLastSize, 
+					queueSizeDelta, 
+					queueSize);
 				m_InputQueueLastSize = queueSize;
 			}
 		} else {
@@ -920,6 +922,7 @@ void Plugin::AMD::VCEEncoder::LogProperties() {
 	try { AMF_LOG_INFO("  Maximum Slice Size: %d", GetMaximumSliceSize()); } catch (...) {}
 	try { AMF_LOG_INFO("  Slice Control Mode: %s", Utility::SliceControlModeAsString(GetSliceControlMode())); } catch (...) {}
 	try { AMF_LOG_INFO("  Slice Control Size: %d", GetSliceControlSize()); } catch (...) {}
+	try { AMF_LOG_INFO("  Constraint Flags: %s", GetConstraintFlags().to_string().c_str()); } catch (...) {}
 
 	Plugin::AMD::VCECapabilities::ReportAdapterCapabilities(m_API, m_APIAdapter);
 
@@ -2088,4 +2091,25 @@ uint32_t Plugin::AMD::VCEEncoder::GetSliceControlSize() {
 	}
 	AMF_LOG_DEBUG("<" __FUNCTION_NAME__ "> Value is %d.", size);
 	return size;
+}
+
+void Plugin::AMD::VCEEncoder::SetConstraintFlags(std::bitset<8> flags) {
+	uint32_t bflags = flags.to_ulong();
+	AMF_RESULT res = m_AMFEncoder->SetProperty(L"ConstraintSetFlags", bflags);
+	if (res != AMF_OK) {
+		ThrowExceptionWithAMFError("<" __FUNCTION_NAME__ "> Setting to %s failed with error %ls (code %d).", res, flags.to_string().c_str());
+	}
+	AMF_LOG_DEBUG("<" __FUNCTION_NAME__ "> Set to %s.", flags.to_string().c_str());
+}
+
+std::bitset<8> Plugin::AMD::VCEEncoder::GetConstraintFlags() {
+	uint32_t bflags;
+	AMF_RESULT res = m_AMFEncoder->GetProperty(L"ConstraintSetFlags", &bflags);
+	if (res != AMF_OK) {
+		ThrowExceptionWithAMFError("<" __FUNCTION_NAME__ "> Failed with error %ls (code %d).", res);
+	}
+	std::bitset<8> flags(bflags);
+	AMF_LOG_DEBUG("<" __FUNCTION_NAME__ "> Value is %s.", flags.to_string().c_str());
+	
+	return flags;
 }

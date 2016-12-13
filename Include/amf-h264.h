@@ -33,10 +33,11 @@ SOFTWARE.
 #include <thread>
 #include <vector>
 #include <chrono>
+#include <bitset>
 
 // Plugin
 #include "plugin.h"
-#include "amd-amf.h"
+#include "amf.h"
 #include "api-base.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -420,12 +421,21 @@ namespace Plugin {
 			uint32_t GetSliceControlSize();
 			#pragma endregion Slicing
 
+			// - ConstraintSetFlags (0 - 255, 1 byte bitset?)
+			void SetConstraintFlags(std::bitset<8> flags);
+			std::bitset<8> GetConstraintFlags();
+
+			// - LowLatencyInternal (bool)
+			void SetLowLatencyInternalEnabled(bool enabled);
+			bool GetLowLatencyInternalEnabled();
+
+			// - CommonLowLatencyInternal (bool)
+			void SetCommonLowLatencyInternalEnabled(bool enabled);
+			bool GetCommonLowLatencyInternalEnabled();
+
 			// More:
 			// - CodecId (H264 = 5, H264SVC = 8, 2xUNKNOWN)
 			// - EngineType (Auto = 0, DX9 = 1, DX11 = 2, XVBA = 3)
-			// - ConstraintSetFlags (0 - 255, 1 byte bitset?)
-			// - LowLatencyInternal (bool)
-			// - CommonLowLatencyInternal (bool)
 			// - UniqueInstance (0 - INT_MAX)
 			// - MultiInstanceMode (bool)
 			// - MultiInstanceCurrentQueue (0 - 1)

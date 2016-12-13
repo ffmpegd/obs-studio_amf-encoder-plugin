@@ -1554,14 +1554,17 @@ bool Plugin::Interface::H264Interface::update(obs_data_t* data) {
 		case VCERateControlMethod_ConstantBitrate:
 			m_VideoEncoder->SetTargetBitrate((uint32_t)obs_data_get_int(data, AMF_H264_BITRATE_TARGET) * 1000);
 			m_VideoEncoder->SetPeakBitrate(m_VideoEncoder->GetTargetBitrate());
+			m_VideoEncoder->SetFillerDataEnabled(obs_data_get_int(data, AMF_H264_FILLERDATA) == 1);
 			break;
 		case VCERateControlMethod_VariableBitrate_PeakConstrained:
 			m_VideoEncoder->SetTargetBitrate((uint32_t)obs_data_get_int(data, AMF_H264_BITRATE_TARGET) * 1000);
 			m_VideoEncoder->SetPeakBitrate((uint32_t)obs_data_get_int(data, AMF_H264_BITRATE_PEAK) * 1000);
+			m_VideoEncoder->SetFillerDataEnabled(false);
 			break;
 		case VCERateControlMethod_VariableBitrate_LatencyConstrained:
 			m_VideoEncoder->SetTargetBitrate((uint32_t)obs_data_get_int(data, AMF_H264_BITRATE_TARGET) * 1000);
 			m_VideoEncoder->SetPeakBitrate((uint32_t)obs_data_get_int(data, AMF_H264_BITRATE_PEAK) * 1000);
+			m_VideoEncoder->SetFillerDataEnabled(false);
 			break;
 		case VCERateControlMethod_ConstantQP:
 			m_VideoEncoder->SetIFrameQP((uint8_t)obs_data_get_int(data, AMF_H264_QP_IFRAME));
@@ -1569,6 +1572,7 @@ bool Plugin::Interface::H264Interface::update(obs_data_t* data) {
 			try {
 				m_VideoEncoder->SetBFrameQP((uint8_t)obs_data_get_int(data, AMF_H264_QP_BFRAME));
 			} catch (std::exception e) {} catch (...) {}
+			m_VideoEncoder->SetFillerDataEnabled(false);
 			break;
 	}
 	if (obs_data_get_int(data, AMF_H264_VBVBUFFER) == 0) {

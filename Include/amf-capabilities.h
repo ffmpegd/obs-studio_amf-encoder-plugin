@@ -35,8 +35,9 @@ SOFTWARE.
 
 // Plugin
 #include "plugin.h"
-#include "amd-amf.h"
-#include "amd-amf-vce.h"
+#include "amf.h"
+#include "amf-h264.h"
+#include "amf-h265.h"
 #include "api-base.h"
 
 // AMF

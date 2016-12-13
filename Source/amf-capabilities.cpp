@@ -35,7 +35,7 @@ SOFTWARE.
 #include <VersionHelpers.h>
 #endif
 
-#include "amd-amf-vce-capabilities.h"
+#include "amf-capabilities.h"
 #include "api-d3d11.h"
 #include "api-d3d9.h"
 #include "misc-util.cpp"
@@ -94,7 +94,8 @@ void Plugin::AMD::VCECapabilities::ReportAdapterCapabilities(std::shared_ptr<Plu
 	auto inst = GetInstance();
 	VCEEncoderType types[] = {
 		VCEEncoderType_AVC,
-		VCEEncoderType_SVC,
+		//VCEEncoderType_SVC,
+		VCEEncoderType_HEVC,
 	};
 
 	AMF_LOG_INFO("Capabilities for Device '%s' on API %s:",
@@ -283,7 +284,8 @@ bool Plugin::AMD::VCECapabilities::Refresh() {
 
 			VCEEncoderType types[] = {
 				VCEEncoderType_AVC,
-				VCEEncoderType_SVC
+				//VCEEncoderType_SVC,
+				VCEEncoderType_HEVC,
 			};
 			for (auto type : types) {
 				VCEDeviceCapabilities devCaps = VCEDeviceCapabilities();
