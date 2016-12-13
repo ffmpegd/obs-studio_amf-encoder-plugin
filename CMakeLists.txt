@@ -3,28 +3,32 @@ cmake_minimum_required(VERSION 2.8.12)
 # Shared (OBS Studio & Standalone)
 PROJECT(enc-amf)
 SET(enc-amf_HEADERS
-	"Include/amd-amf.h"
-	"Include/amd-amf-vce.h"
-	"Include/amd-amf-vce-capabilities.h"
+	"Include/amf.h"
+	"Include/amf-capabilities.h"
+	"Include/amf-h264.h"
+	"Include/amf-h265.h"
 	"Include/api-base.h"
 	"Include/api-d3d9.h"
 	"Include/api-d3d11.h"
 	"Include/api-host.h"
 	"Include/api-opengl.h"
 	"Include/enc-h264.h"
+	"Include/enc-h265.h"
 	"Include/plugin.h"
 	"${PROJECT_BINARY_DIR}/Include/Version.h"
 )
 SET(enc-amf_SOURCES
-	"Source/amd-amf.cpp"
-	"Source/amd-amf-vce.cpp"
-	"Source/amd-amf-vce-capabilities.cpp"
+	"Source/amf.cpp"
+	"Source/amf-capabilities.cpp"
+	"Source/amf-h264.cpp"
+	"Source/amf-h265.cpp"
 	"Source/api-base.cpp"
 	"Source/api-host.cpp"
 	"Source/api-d3d9.cpp"
 	"Source/api-d3d11.cpp"
 	"Source/api-opengl.cpp"
 	"Source/enc-h264.cpp"
+	"Source/enc-h265.cpp"
 	"Source/misc-util.cpp"
 	"Source/plugin.cpp"
 )
