@@ -110,7 +110,7 @@ const char* Plugin::Interface::H265Interface::get_name(void*) {
 	return name;
 }
 
-void Plugin::Interface::H265Interface::get_defaults(obs_data_t *data) {
+void Plugin::Interface::H265Interface::get_defaults(obs_data_t *data, void *) {
 	#pragma region OBS - Enforce Streaming Service Restrictions
 	obs_data_set_default_int(data, "bitrate", 0);
 	obs_data_set_default_int(data, "keyint_sec", 0);
@@ -215,7 +215,7 @@ static void fill_device_list(obs_property_t* p, const char* apiname) {
 	}
 }
 
-obs_properties_t* Plugin::Interface::H265Interface::get_properties(void* data) {
+obs_properties_t* Plugin::Interface::H265Interface::get_properties(void* data, void *) {
 	obs_properties* props = obs_properties_create();
 	obs_property_t* p;
 

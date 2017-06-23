@@ -27,8 +27,8 @@ namespace Plugin {
 			public:
 			static void encoder_register();
 			static const char* get_name(void* type_data);
-			static void get_defaults(obs_data_t *settings);
-			static obs_properties_t* get_properties(void* data);
+			static void get_defaults(obs_data_t *settings, void *type_data);
+			static obs_properties_t* get_properties(void* data, void *type_data);
 			
 			static bool properties_modified(obs_properties_t *props, obs_property_t *, obs_data_t *data);
 
