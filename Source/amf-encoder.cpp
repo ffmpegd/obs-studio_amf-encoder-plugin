@@ -536,6 +536,7 @@ bool Plugin::AMD::Encoder::Encode(struct encoder_frame* frame, struct encoder_pa
 }
 
 void Plugin::AMD::Encoder::GetVideoInfo(struct video_scale_info* info) {
+#ifndef PIPED_PROCESS
 	AMFTRACECALL;
 
 	if (!m_AMFContext || !m_AMFEncoder)
@@ -571,6 +572,9 @@ void Plugin::AMD::Encoder::GetVideoInfo(struct video_scale_info* info) {
 	} else {
 		info->range = VIDEO_RANGE_PARTIAL;
 	}
+#else
+	(void)info;
+#endif
 }
 
 bool Plugin::AMD::Encoder::GetExtraData(uint8_t** extra_data, size_t* size) {
@@ -629,6 +633,7 @@ bool Plugin::AMD::Encoder::EncodeAllocate(OUT amf::AMFSurfacePtr& surface) {
 }
 
 bool Plugin::AMD::Encoder::EncodeStore(OUT amf::AMFSurfacePtr& surface, IN struct encoder_frame* frame) {
+#ifndef PIPED_PROCESS
 	AMFTRACECALL;
 
 	AMF_RESULT res;
@@ -726,7 +731,10 @@ bool Plugin::AMD::Encoder::EncodeStore(OUT amf::AMFSurfacePtr& surface, IN struc
 			surface->GetDuration(),
 			printableType.c_str());
 	}
-
+#else
+	(void)surface;
+	(void)frame;
+#endif
 	return true;
 }
 
@@ -930,6 +938,7 @@ bool Plugin::AMD::Encoder::EncodeMain(IN amf::AMFDataPtr& data, OUT amf::AMFData
 }
 
 bool Plugin::AMD::Encoder::EncodeLoad(IN amf::AMFDataPtr& data, OUT struct encoder_packet* packet, OUT bool* received_packet) {
+#ifndef PIPED_PROCESS
 	AMFTRACECALL;
 
 	if (data == nullptr)
@@ -1036,12 +1045,18 @@ bool Plugin::AMD::Encoder::EncodeLoad(IN amf::AMFDataPtr& data, OUT struct encod
 	}
 
 	*received_packet = true;
-
+#else
+	(void)data;
+	(void)packet;
+	(void)received_packet;
+#endif
 	return true;
 }
 
 int32_t Plugin::AMD::Encoder::AsyncSendMain(Encoder* obj) {
+#ifndef PIPED_PROCESS
 	os_set_thread_name("AMF Asynchronous Queue Sender");
+#endif
 	return obj->AsyncSendLocalMain();
 }
 
@@ -1097,7 +1112,9 @@ int32_t Plugin::AMD::Encoder::AsyncSendLocalMain() {
 }
 
 int32_t Plugin::AMD::Encoder::AsyncRetrieveMain(Encoder* obj) {
+#ifndef PIPED_PROCESS
 	os_set_thread_name("AMF Asynchronous Queue Retriever");
+#endif
 	return obj->AsyncRetrieveLocalMain();
 }
 

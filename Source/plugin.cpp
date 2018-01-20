@@ -26,6 +26,9 @@
 
 #include "enc-h264.h"
 #include "enc-h265.h"
+
+#include "libobs/util/util.hpp"
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -162,6 +165,33 @@ static void printDebugInfo(amf::AMFComponentPtr m_AMFEncoder) {
 }
 #endif
 
+#ifndef NO_PIPED_DETECTION
+static inline bool create_process(const char *cmd_line, HANDLE *process)
+{
+	PROCESS_INFORMATION pi = {0};
+	STARTUPINFOW si = {0};
+	wchar_t *cmd_line_w = NULL;
+	bool success = false;
+
+	os_utf8_to_wcs_ptr(cmd_line, 0, &cmd_line_w);
+	if (cmd_line_w) {
+		si.cb = sizeof(si);
+		success = !!CreateProcessW(nullptr, cmd_line_w, nullptr,
+				nullptr, true, CREATE_NO_WINDOW, nullptr,
+				nullptr, &si, &pi);
+
+		if (success) {
+			*process = pi.hProcess;
+			CloseHandle(pi.hThread);
+		}
+
+		bfree(cmd_line_w);
+	}
+
+	return success;
+}
+#endif
+
 /**
 * Required: Called when the module is loaded.  Use this function to load all
 * the sources/encoders/outputs/services for your module, or anything else that
@@ -172,6 +202,36 @@ static void printDebugInfo(amf::AMFComponentPtr m_AMFEncoder) {
 */
 MODULE_EXPORT bool obs_module_load(void) {
 	PLOG_DEBUG("<" __FUNCTION_NAME__ "> Loading...");
+
+#ifndef NO_PIPED_DETECTION
+	HANDLE process = nullptr;
+	DWORD detect_code = 0;
+
+#ifdef _WIN64
+#define BIT_STR "64"
+#else
+#define BIT_STR "32"
+#endif
+
+	// Call amf-detect process to check to see if AMF is available before
+	// initializing AMF in the process.  This isolates the check and
+	// prevents potential startup crashes from affecting OBS startup.
+	BPtr<char> path = obs_module_file("detect-amf" BIT_STR ".exe");
+	if (create_process(path, &process)) {
+		if (WaitForSingleObject(process, 2000) == WAIT_OBJECT_0)
+			GetExitCodeProcess(process, &detect_code);
+		CloseHandle(process);
+	}
+
+	if (detect_code != 3) {
+		if (detect_code == 2) {
+			PLOG_INFO("<" __FUNCTION_NAME__ "> AMF not supported (no AMD graphics)");
+		} else {
+			PLOG_INFO("<" __FUNCTION_NAME__ "> AMF detection failure prevented!  <3");
+		}
+		return false;
+	}
+#endif
 
 	// AMF
 	try {
@@ -202,7 +262,7 @@ MODULE_EXPORT bool obs_module_load(void) {
 	Plugin::Interface::H264Interface::encoder_register();
 	Plugin::Interface::H265Interface::encoder_register();
 
-	#ifdef _DEBUG
+#if defined(_DEBUG)
 	{
 		PLOG_INFO("Dumping Parameter Information...");
 		const wchar_t* encoders[] = {
@@ -252,7 +312,7 @@ MODULE_EXPORT bool obs_module_load(void) {
 		}
 
 	}
-	#endif
+#endif
 
 	PLOG_DEBUG("<" __FUNCTION_NAME__ "> Loaded.");
 	return true;

@@ -1353,6 +1353,7 @@ uint32_t Plugin::AMD::EncoderH264::GetIntraRefreshNumOfStripes() {
 
 // Internal
 void Plugin::AMD::EncoderH264::PacketPriorityAndKeyframe(amf::AMFDataPtr& pData, struct encoder_packet* packet) {
+#ifndef PIPED_PROCESS
 	AMFTRACECALL;
 	uint64_t pktType;
 	pData->GetProperty(AMF_VIDEO_ENCODER_OUTPUT_DATA_TYPE, &pktType);
@@ -1369,6 +1370,10 @@ void Plugin::AMD::EncoderH264::PacketPriorityAndKeyframe(amf::AMFDataPtr& pData,
 			packet->priority = 0;
 			break;
 	}
+#else
+	(void)pData;
+	(void)packet;
+#endif
 }
 
 AMF_RESULT Plugin::AMD::EncoderH264::GetExtraDataInternal(amf::AMFVariant* p) {
@@ -1493,6 +1498,7 @@ void Plugin::AMD::EncoderH264::LogProperties() {
 		m_UniqueId,
 		Utility::QualityPresetToString(GetQualityPreset()));
 	auto profileLevel = static_cast<uint16_t>(GetProfileLevel());
+	(void)profileLevel;
 	PLOG_INFO(PREFIX "    Profile: %s %" PRIu16 ".%" PRIu16,
 		m_UniqueId,
 		Utility::ProfileToString(GetProfile()),

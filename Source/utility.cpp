@@ -44,6 +44,7 @@ uint64_t Utility::GetUniqueIdentifier() {
 
 static std::map<std::string, std::string> translatedMap;
 const char* Utility::obs_module_text_multi(const char *key, uint8_t depth) {
+#ifndef PIPED_PROCESS
 	// Check if it already was translated.
 	if (!translatedMap.count(std::string(key))) { // If not, translate it now.
 		const char* out = obs_module_text(key);
@@ -89,6 +90,11 @@ const char* Utility::obs_module_text_multi(const char *key, uint8_t depth) {
 
 	auto value = translatedMap.find(std::string(key));
 	return value->second.c_str();
+#else
+	(void)key;
+	(void)depth;
+	return nullptr;
+#endif
 }
 
 

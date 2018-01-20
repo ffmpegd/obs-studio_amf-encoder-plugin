@@ -150,7 +150,7 @@ Plugin::API::Direct3D11::Direct3D11() {
 			continue;
 
 		std::vector<char> buf(1024);
-		snprintf(buf.data(), buf.size(), "%ls (VEN_%04x/DEV_%04x/SUB_%04x/REV_%04x)",
+		_snprintf(buf.data(), buf.size(), "%ls (VEN_%04x/DEV_%04x/SUB_%04x/REV_%04x)",
 			desc.Description,
 			desc.VendorId,
 			desc.DeviceId,
@@ -260,7 +260,7 @@ Plugin::API::Direct3D11Instance::Direct3D11Instance(Direct3D11* api, Adapter ada
 	}
 	if (FAILED(hr)) {
 		std::vector<char> buf(1024);
-		snprintf(buf.data(), buf.size(), "<" __FUNCTION_NAME__ "> Unable to create D3D11 device, error code %X.", hr);
+		_snprintf(buf.data(), buf.size(), "<" __FUNCTION_NAME__ "> Unable to create D3D11 device, error code %X.", hr);
 		throw std::exception(buf.data());
 	}
 }

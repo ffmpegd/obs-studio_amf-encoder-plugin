@@ -177,6 +177,7 @@ else()
 		"${PATH_OBSStudio}/"
 	)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions(-DNO_PIPED_DETECTION)
 endif()
 
 ################################################################################
@@ -207,6 +208,7 @@ endif()
 
 if(TARGET obs)
 	install_obs_plugin_with_data(enc-amf Resources)
+	add_subdirectory(Source/detect-amf)
 else()
 	math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
 	add_custom_command(TARGET enc-amf POST_BUILD

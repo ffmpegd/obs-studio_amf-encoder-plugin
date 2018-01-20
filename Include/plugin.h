@@ -33,11 +33,19 @@
 #define PLUGIN_NAME				"AMD Advanced Media Framework"
 #include "Version.h"
 
+#ifdef PIPED_PROCESS
+#define PLOG(level, ...)
+#define PLOG_ERROR(...)
+#define PLOG_WARNING(...)
+#define PLOG_INFO(...)
+#define PLOG_DEBUG(...)
+#else
 #define PLOG(level, ...)		blog(level, "[AMF] " __VA_ARGS__);
 #define PLOG_ERROR(...)			PLOG(LOG_ERROR,   __VA_ARGS__)
 #define PLOG_WARNING(...)		PLOG(LOG_WARNING, __VA_ARGS__)
 #define PLOG_INFO(...)			PLOG(LOG_INFO,    __VA_ARGS__)
 #define PLOG_DEBUG(...)			PLOG(LOG_DEBUG,   __VA_ARGS__)
+#endif
 
 // Utility
 #define vstr(s) dstr(s)
@@ -62,11 +70,15 @@
 #endif
 #define OUT
 
+#ifdef PIPED_PROCESS
+#define QUICK_FORMAT_MESSAGE(var, ...) std::string var = "";
+#else
 #define QUICK_FORMAT_MESSAGE(var, ...) std::string var = ""; { \
 		std::vector<char> QUICK_FORMAT_MESSAGE_buf(1024); \
 		snprintf(QUICK_FORMAT_MESSAGE_buf.data(), QUICK_FORMAT_MESSAGE_buf.size(), __VA_ARGS__); \
 		var = std::string(QUICK_FORMAT_MESSAGE_buf.data()); \
 	}
+#endif
 
 #ifndef __FUNCTION_NAME__
 #if defined(_WIN32) || defined(_WIN64)   //WINDOWS

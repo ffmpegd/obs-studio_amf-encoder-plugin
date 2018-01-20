@@ -69,6 +69,7 @@ Plugin::AMD::CapabilityManager::CapabilityManager() {
 						isSupported = true;
 				} catch (const std::exception& e) {
 					PLOG_WARNING("%s", e.what());
+					(void)e;
 				}
 
 				PLOG_DEBUG("[Capability Manager] Testing %s Adapter '%s' with codec %s: %s.",

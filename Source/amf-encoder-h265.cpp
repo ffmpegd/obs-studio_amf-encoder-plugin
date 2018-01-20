@@ -1402,6 +1402,7 @@ uint32_t Plugin::AMD::EncoderH265::GetInputQueueSize() {
 
 // Internal
 void Plugin::AMD::EncoderH265::PacketPriorityAndKeyframe(amf::AMFDataPtr& pData, struct encoder_packet* packet) {
+#ifndef PIPED_PROCESS
 	AMFTRACECALL;
 
 	uint64_t pktType;
@@ -1415,6 +1416,10 @@ void Plugin::AMD::EncoderH265::PacketPriorityAndKeyframe(amf::AMFDataPtr& pData,
 			packet->priority = 0;
 			break;
 	}
+#else
+	(void)pData;
+	(void)packet;
+#endif
 }
 
 AMF_RESULT Plugin::AMD::EncoderH265::GetExtraDataInternal(amf::AMFVariant* p) {
@@ -1538,6 +1543,7 @@ void Plugin::AMD::EncoderH265::LogProperties() {
 		m_UniqueId,
 		Utility::QualityPresetToString(GetQualityPreset()));
 	auto profileLevel = static_cast<uint16_t>(GetProfileLevel());
+	(void)profileLevel;
 	PLOG_INFO(PREFIX "    Profile: %s %" PRIu16 ".%" PRIu16,
 		m_UniqueId,
 		Utility::ProfileToString(GetProfile()),
