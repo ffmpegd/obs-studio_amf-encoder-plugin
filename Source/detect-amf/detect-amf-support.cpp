@@ -24,7 +24,7 @@
 #include <sstream>
 
 int main(void) {
-	PLOG_DEBUG("<" __FUNCTION_NAME__ "> Loading...");
+	SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS);
 
 	try {
 		// AMF
